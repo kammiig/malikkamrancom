@@ -1,4 +1,7 @@
-<?php $aboutExtra = $about['extra'] ?? []; ?>
+<?php
+$aboutExtra = $about['extra'] ?? [];
+$aboutImageStyle = $aboutExtra['image_style'] ?? 'black-white';
+?>
 <section class="page-hero section-pad compact">
     <div class="container">
         <span class="eyebrow">About</span>
@@ -9,9 +12,9 @@
 
 <section class="section-pad">
     <div class="container split">
-        <div class="portrait">
+        <div class="portrait image-style-<?= e($aboutImageStyle) ?>">
             <?php if (!empty($about['image_path'])): ?>
-                <img src="<?= e(asset($about['image_path'])) ?>" alt="Muhammad Kamran Malik" loading="lazy">
+                <img src="<?= e(asset($about['image_path'])) ?>" alt="<?= e($aboutExtra['image_alt'] ?? 'Muhammad Kamran Malik profile image') ?>" title="<?= e($aboutExtra['image_title'] ?? 'Muhammad Kamran Malik') ?>" width="560" height="700" loading="lazy">
             <?php else: ?>
                 <div class="avatar-placeholder">MKM</div>
             <?php endif; ?>
@@ -48,4 +51,3 @@
         </div>
     </div>
 </section>
-

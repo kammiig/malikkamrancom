@@ -49,6 +49,8 @@ CREATE TABLE IF NOT EXISTS services (
     description TEXT NOT NULL,
     icon_path VARCHAR(255) NULL,
     icon_label VARCHAR(40) NULL,
+    icon_alt VARCHAR(255) NULL,
+    icon_title VARCHAR(255) NULL,
     position INT NOT NULL DEFAULT 0,
     is_active TINYINT(1) NOT NULL DEFAULT 1,
     created_at TIMESTAMP NULL DEFAULT NULL,
@@ -68,6 +70,8 @@ CREATE TABLE IF NOT EXISTS projects (
     results MEDIUMTEXT NULL,
     tech_stack TEXT NULL,
     image_path VARCHAR(255) NULL,
+    image_alt VARCHAR(255) NULL,
+    image_title VARCHAR(255) NULL,
     live_url VARCHAR(255) NULL,
     seo_title VARCHAR(255) NULL,
     seo_description TEXT NULL,
@@ -82,6 +86,8 @@ CREATE TABLE IF NOT EXISTS project_images (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     project_id BIGINT UNSIGNED NOT NULL,
     image_path VARCHAR(255) NOT NULL,
+    alt_text VARCHAR(255) NULL,
+    title_text VARCHAR(255) NULL,
     caption VARCHAR(255) NULL,
     position INT NOT NULL DEFAULT 0,
     created_at TIMESTAMP NULL DEFAULT NULL,
@@ -127,6 +133,8 @@ CREATE TABLE IF NOT EXISTS testimonials (
     company VARCHAR(190) NULL,
     rating TINYINT UNSIGNED NOT NULL DEFAULT 5,
     image_path VARCHAR(255) NULL,
+    image_alt VARCHAR(255) NULL,
+    image_title VARCHAR(255) NULL,
     position INT NOT NULL DEFAULT 0,
     is_active TINYINT(1) NOT NULL DEFAULT 1,
     created_at TIMESTAMP NULL DEFAULT NULL,
@@ -157,6 +165,8 @@ CREATE TABLE IF NOT EXISTS seo_settings (
     og_title VARCHAR(255) NULL,
     og_description TEXT NULL,
     og_image VARCHAR(255) NULL,
+    og_image_alt VARCHAR(255) NULL,
+    og_image_title VARCHAR(255) NULL,
     canonical_url VARCHAR(255) NULL,
     created_at TIMESTAMP NULL DEFAULT NULL,
     updated_at TIMESTAMP NULL DEFAULT NULL
@@ -181,6 +191,8 @@ CREATE TABLE IF NOT EXISTS uploaded_files (
     mime_type VARCHAR(120) NOT NULL,
     file_size INT UNSIGNED NOT NULL,
     context VARCHAR(120) NULL,
+    alt_text VARCHAR(255) NULL,
+    title_text VARCHAR(255) NULL,
     created_at TIMESTAMP NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -197,6 +209,12 @@ CREATE TABLE IF NOT EXISTS content_pages (
 INSERT INTO settings (`key`, `value`, created_at, updated_at) VALUES
 ('site_name', 'Muhammad Kamran Malik', NOW(), NOW()),
 ('logo_text', 'Muhammad Kamran Malik', NOW(), NOW()),
+('logo_path', '', NOW(), NOW()),
+('logo_alt', 'Muhammad Kamran Malik logo', NOW(), NOW()),
+('logo_title', 'Muhammad Kamran Malik', NOW(), NOW()),
+('favicon_path', '', NOW(), NOW()),
+('privacy_link', '/privacy-policy', NOW(), NOW()),
+('terms_link', '/terms-conditions', NOW(), NOW()),
 ('header_cta_text', 'Hire Me', NOW(), NOW()),
 ('header_cta_link', '/contact', NOW(), NOW()),
 ('contact_email', 'hello@example.com', NOW(), NOW()),
@@ -229,9 +247,12 @@ JSON_OBJECT(
     'primary_button_link', '/projects',
     'secondary_button_text', 'Let’s Work Together',
     'secondary_button_link', '/contact',
+    'enable_image', false,
+    'image_alt', 'Muhammad Kamran Malik web developer',
+    'image_title', 'Muhammad Kamran Malik',
     'stats', JSON_ARRAY(
         JSON_OBJECT('number', '8+', 'label', 'Years Experience'),
-        JSON_OBJECT('number', '100+', 'label', 'Websites'),
+        JSON_OBJECT('number', '8K+', 'label', 'Successful Business Websites Created'),
         JSON_OBJECT('number', 'WordPress', 'label', 'Shopify / WHMCS Specialist')
     )
 ),
@@ -243,19 +264,24 @@ NOW()),
 'I’m a professional Web Developer with over 8 years of experience creating websites, eCommerce stores, hosting platforms, dashboards, and custom business solutions. My focus is simple: build websites that look professional, load fast, work smoothly on all devices, and help businesses get more enquiries, sales, and trust online.',
 NULL,
 NULL,
-JSON_OBJECT('experience_details', JSON_ARRAY('WordPress', 'Shopify', 'WHMCS', 'HTML/CSS/JavaScript', 'PHP/Laravel', 'MySQL', 'cPanel', 'GitHub', 'Cloudflare', 'Custom dashboards')),
+JSON_OBJECT(
+    'experience_details', JSON_ARRAY('WordPress', 'Shopify', 'WHMCS', 'HTML/CSS/JavaScript', 'PHP/Laravel', 'MySQL', 'cPanel', 'GitHub', 'Cloudflare', 'Custom dashboards'),
+    'image_style', 'black-white',
+    'image_alt', 'Muhammad Kamran Malik profile image',
+    'image_title', 'Muhammad Kamran Malik'
+),
 NOW(),
 NOW())
 ON DUPLICATE KEY UPDATE title = VALUES(title), subtitle = VALUES(subtitle), content = VALUES(content), extra_json = VALUES(extra_json), updated_at = NOW();
 
-INSERT INTO services (title, slug, description, icon_label, position, is_active, created_at, updated_at) VALUES
-('Business Website Development', 'business-website-development', 'Clean, responsive websites for companies, agencies, and local businesses.', 'BW', 1, 1, NOW(), NOW()),
-('WordPress Development', 'wordpress-development', 'Custom WordPress websites, Elementor Pro builds, theme customisation, and plugin setup.', 'WP', 2, 1, NOW(), NOW()),
-('Shopify Store Development', 'shopify-store-development', 'Professional eCommerce stores with product pages, checkout setup, and payment integration.', 'SP', 3, 1, NOW(), NOW()),
-('WHMCS / Hosting Website Development', 'whmcs-hosting-website-development', 'Hosting company websites connected with WHMCS client areas, domain ordering, and hosting plans.', 'WH', 4, 1, NOW(), NOW()),
-('Custom Web Apps & Dashboards', 'custom-web-apps-dashboards', 'Customer portals, booking systems, ledgers, admin dashboards, and business management tools.', 'DB', 5, 1, NOW(), NOW()),
-('Website Maintenance & Optimisation', 'website-maintenance-optimisation', 'Speed optimisation, security updates, backups, bug fixing, and ongoing support.', 'MO', 6, 1, NOW(), NOW())
-ON DUPLICATE KEY UPDATE title = VALUES(title), description = VALUES(description), icon_label = VALUES(icon_label), position = VALUES(position), is_active = VALUES(is_active), updated_at = NOW();
+INSERT INTO services (title, slug, description, icon_label, icon_alt, icon_title, position, is_active, created_at, updated_at) VALUES
+('Business Website Development', 'business-website-development', 'Clean, responsive websites for companies, agencies, and local businesses.', 'monitor', 'Business website development icon', 'Business Website Development', 1, 1, NOW(), NOW()),
+('WordPress Development', 'wordpress-development', 'Custom WordPress websites, Elementor Pro builds, theme customisation, and plugin setup.', 'code', 'WordPress development icon', 'WordPress Development', 2, 1, NOW(), NOW()),
+('Shopify Store Development', 'shopify-store-development', 'Professional eCommerce stores with product pages, checkout setup, and payment integration.', 'shopping-bag', 'Shopify store development icon', 'Shopify Store Development', 3, 1, NOW(), NOW()),
+('WHMCS / Hosting Website Development', 'whmcs-hosting-website-development', 'Hosting company websites connected with WHMCS client areas, domain ordering, and hosting plans.', 'server', 'WHMCS hosting website icon', 'WHMCS / Hosting Website Development', 4, 1, NOW(), NOW()),
+('Custom Web Apps & Dashboards', 'custom-web-apps-dashboards', 'Customer portals, booking systems, ledgers, admin dashboards, and business management tools.', 'dashboard', 'Custom dashboard icon', 'Custom Web Apps & Dashboards', 5, 1, NOW(), NOW()),
+('Website Maintenance & Optimisation', 'website-maintenance-optimisation', 'Speed optimisation, security updates, backups, bug fixing, and ongoing support.', 'wrench', 'Website maintenance icon', 'Website Maintenance & Optimisation', 6, 1, NOW(), NOW())
+ON DUPLICATE KEY UPDATE title = VALUES(title), description = VALUES(description), icon_label = VALUES(icon_label), icon_alt = VALUES(icon_alt), icon_title = VALUES(icon_title), position = VALUES(position), is_active = VALUES(is_active), updated_at = NOW();
 
 INSERT INTO projects (title, slug, category, short_description, overview, client_problem, solution, key_features, results, tech_stack, live_url, position, is_featured, is_active, created_at, updated_at) VALUES
 ('Planetic Solutions Hosting Website', 'planetic-solutions-hosting-website', 'Hosting / WHMCS Website',
@@ -370,9 +396,9 @@ INSERT INTO testimonials (id, quote, client_name, client_role, company, rating, 
 ON DUPLICATE KEY UPDATE quote = VALUES(quote), client_name = VALUES(client_name), client_role = VALUES(client_role), company = VALUES(company), rating = VALUES(rating), position = VALUES(position), is_active = VALUES(is_active), updated_at = NOW();
 
 INSERT INTO social_links (label, url, icon, position, is_active, created_at, updated_at) VALUES
-('GitHub', 'https://github.com/', 'GitHub', 1, 1, NOW(), NOW()),
-('LinkedIn', 'https://www.linkedin.com/', 'LinkedIn', 2, 1, NOW(), NOW()),
-('WhatsApp', 'https://wa.me/', 'WhatsApp', 3, 1, NOW(), NOW())
+('GitHub', 'https://github.com/', 'github', 1, 1, NOW(), NOW()),
+('LinkedIn', 'https://www.linkedin.com/', 'linkedin', 2, 1, NOW(), NOW()),
+('WhatsApp', 'https://wa.me/', 'whatsapp', 3, 1, NOW(), NOW())
 ON DUPLICATE KEY UPDATE url = VALUES(url), icon = VALUES(icon), position = VALUES(position), is_active = VALUES(is_active), updated_at = NOW();
 
 INSERT INTO seo_settings (page_key, path, meta_title, meta_description, meta_keywords, og_title, og_description, canonical_url, created_at, updated_at) VALUES

@@ -141,3 +141,94 @@ function selected(mixed $actual, mixed $expected): string
     return (string) $actual === (string) $expected ? 'selected' : '';
 }
 
+function icon_options(): array
+{
+    return [
+        'globe' => 'Globe',
+        'monitor' => 'Monitor',
+        'code' => 'Code',
+        'shopping-bag' => 'Shopping Bag',
+        'cart' => 'Shopping Cart',
+        'server' => 'Server',
+        'cloud' => 'Cloud',
+        'dashboard' => 'Dashboard',
+        'wrench' => 'Wrench',
+        'settings' => 'Settings',
+        'wordpress' => 'WordPress / CMS',
+        'github' => 'GitHub',
+        'linkedin' => 'LinkedIn',
+        'whatsapp' => 'WhatsApp',
+        'email' => 'Email',
+        'facebook' => 'Facebook',
+        'instagram' => 'Instagram',
+    ];
+}
+
+function social_icon_options(): array
+{
+    return [
+        'github' => 'GitHub',
+        'linkedin' => 'LinkedIn',
+        'whatsapp' => 'WhatsApp',
+        'email' => 'Email',
+        'facebook' => 'Facebook',
+        'instagram' => 'Instagram',
+        'globe' => 'Website',
+    ];
+}
+
+function service_icon_options(): array
+{
+    return [
+        'monitor' => 'Monitor / Business Website',
+        'code' => 'Code / WordPress',
+        'wordpress' => 'WordPress / CMS',
+        'shopping-bag' => 'Shopping Bag / Store',
+        'server' => 'Server / Hosting',
+        'cloud' => 'Cloud / WHMCS',
+        'dashboard' => 'Dashboard / Web App',
+        'wrench' => 'Wrench / Maintenance',
+        'settings' => 'Settings / Optimisation',
+        'globe' => 'Globe',
+    ];
+}
+
+function icon_svg(?string $name, string $class = 'ui-icon'): string
+{
+    $key = strtolower(trim((string) $name));
+    $key = preg_replace('/[^a-z0-9-]+/', '-', $key) ?: 'globe';
+    $aliases = [
+        'bw' => 'monitor',
+        'wp' => 'code',
+        'sp' => 'shopping-bag',
+        'wh' => 'server',
+        'db' => 'dashboard',
+        'mo' => 'wrench',
+        'mail' => 'email',
+    ];
+    $key = $aliases[$key] ?? $key;
+
+    $icons = [
+        'globe' => '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.3 2.5 3.5 5.5 3.5 9S14.3 18.5 12 21M12 3c-2.3 2.5-3.5 5.5-3.5 9S9.7 18.5 12 21"/>',
+        'monitor' => '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
+        'code' => '<path d="m9 18-6-6 6-6M15 6l6 6-6 6"/>',
+        'wordpress' => '<circle cx="12" cy="12" r="9"/><path d="M6.8 8h2.4l3.1 8.4L14 11.8 12.7 8h2.1l3 8.4M8.2 8h7.6"/>',
+        'shopping-bag' => '<path d="M6 8h12l-1 12H7L6 8Z"/><path d="M9 8a3 3 0 0 1 6 0"/>',
+        'cart' => '<circle cx="9" cy="20" r="1.5"/><circle cx="17" cy="20" r="1.5"/><path d="M3 4h2l2.2 11h10.6L20 7H7"/>',
+        'server' => '<rect x="4" y="4" width="16" height="6" rx="2"/><rect x="4" y="14" width="16" height="6" rx="2"/><path d="M8 7h.01M8 17h.01"/>',
+        'cloud' => '<path d="M17.5 18H8a5 5 0 1 1 1.1-9.9A6 6 0 0 1 20 11.5 3.5 3.5 0 0 1 17.5 18Z"/>',
+        'dashboard' => '<rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="10" width="8" height="11" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/>',
+        'wrench' => '<path d="M14.7 6.3a4 4 0 0 0 5 5L11 20a2.1 2.1 0 0 1-3-3l8.7-8.7a4 4 0 0 0-2-2Z"/>',
+        'settings' => '<path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2 3.4-.2-.1a1.8 1.8 0 0 0-2.1.2 1.7 1.7 0 0 0-.8 1.6V22H10v-.2a1.8 1.8 0 0 0-1.1-1.6 1.8 1.8 0 0 0-2 .1l-.2.1-2-3.4.1-.1A1.7 1.7 0 0 0 5.1 15 1.8 1.8 0 0 0 3.7 14H3v-4h.7a1.8 1.8 0 0 0 1.4-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1 2-3.4.2.1a1.8 1.8 0 0 0 2.1-.2A1.7 1.7 0 0 0 10 2h4.7v.1a1.8 1.8 0 0 0 1.1 1.6 1.8 1.8 0 0 0 2-.1l.2-.1 2 3.4-.1.1a1.7 1.7 0 0 0-.3 1.9 1.8 1.8 0 0 0 1.4 1h.7v4H21a1.8 1.8 0 0 0-1.6 1Z"/>',
+        'github' => '<path d="M12 2a10 10 0 0 0-3.2 19c.5.1.7-.2.7-.5v-1.8c-2.9.6-3.5-1.2-3.5-1.2-.5-1.1-1.1-1.4-1.1-1.4-.9-.6.1-.6.1-.6 1 0 1.6 1.1 1.6 1.1.9 1.5 2.4 1.1 3 .8.1-.7.4-1.1.7-1.4-2.3-.3-4.7-1.2-4.7-5.1 0-1.1.4-2.1 1.1-2.8-.1-.3-.5-1.4.1-2.8 0 0 .9-.3 2.9 1.1A10 10 0 0 1 12 5.1c.9 0 1.7.1 2.5.3 2-1.4 2.9-1.1 2.9-1.1.6 1.4.2 2.5.1 2.8.7.7 1.1 1.7 1.1 2.8 0 4-2.4 4.8-4.7 5.1.4.3.8 1 .8 2v3.5c0 .3.2.6.8.5A10 10 0 0 0 12 2Z"/>',
+        'linkedin' => '<path d="M6.5 9.5V20M6.5 5.5v.01M11 20v-6.2c0-2.9 4.5-3.2 4.5.1V20M11 10h4.5"/>',
+        'whatsapp' => '<path d="M4 20l1.3-4A8 8 0 1 1 8 18.7L4 20Z"/><path d="M9 8.8c.4 3.2 2 4.8 5.2 5.2l1-1.5-1.8-1-1 1c-1-.5-1.6-1.1-2-2l1-1L10.5 7 9 8.8Z"/>',
+        'email' => '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/>',
+        'facebook' => '<path d="M14 8h3V4h-3a5 5 0 0 0-5 5v3H6v4h3v6h4v-6h3l1-4h-4V9a1 1 0 0 1 1-1Z"/>',
+        'instagram' => '<rect x="4" y="4" width="16" height="16" rx="5"/><circle cx="12" cy="12" r="3.5"/><path d="M17.5 6.5h.01"/>',
+    ];
+
+    $body = $icons[$key] ?? $icons['globe'];
+
+    return '<svg class="' . e($class) . '" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' . $body . '</svg>';
+}

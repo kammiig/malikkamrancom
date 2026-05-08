@@ -26,7 +26,7 @@
                 <a href="<?= url('/admin/enquiries') ?>">Enquiries</a>
                 <a href="<?= url('/admin/seo') ?>">SEO Settings</a>
                 <a href="<?= url('/admin/pages') ?>">Policy Pages</a>
-                <a href="<?= url('/admin/media') ?>">Media Library</a>
+                <a href="<?= url('/admin/media') ?>">Media Settings</a>
                 <a href="<?= url('/admin/password') ?>">Change Password</a>
                 <a href="<?= url('/') ?>" target="_blank" rel="noopener">View Website</a>
                 <form action="<?= url('/admin/logout') ?>" method="post">
@@ -53,4 +53,3 @@
     <script src="<?= asset('/assets/js/app.js') ?>" defer></script>
 </body>
 </html>
-

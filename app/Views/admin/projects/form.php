@@ -8,6 +8,8 @@
         <label>Live Website Link <input name="live_url" value="<?= e($project['live_url'] ?? '') ?>"></label>
         <label>Tech Stack <input name="tech_stack" value="<?= e($project['tech_stack'] ?? '') ?>" placeholder="WordPress, PHP, cPanel"></label>
         <label>Position <input type="number" name="position" value="<?= e($project['position'] ?? 0) ?>"></label>
+        <label>Cover Image Alt Text <input name="image_alt" value="<?= e($project['image_alt'] ?? '') ?>" placeholder="Project screenshot alt text"></label>
+        <label>Cover Image Title <input name="image_title" value="<?= e($project['image_title'] ?? '') ?>" placeholder="<?= e($project['title'] ?? 'Project screenshot') ?>"></label>
     </div>
     <label>Short Description <textarea name="short_description" rows="4" required><?= e($project['short_description'] ?? '') ?></textarea></label>
     <label>Overview <textarea name="overview" rows="5"><?= e($project['overview'] ?? '') ?></textarea></label>
@@ -20,17 +22,33 @@
         <label>SEO Description <input name="seo_description" value="<?= e($project['seo_description'] ?? '') ?>"></label>
     </div>
     <label>Project Screenshot / Cover <input type="file" name="image_path" accept="image/png,image/jpeg,image/webp,image/gif"></label>
-    <?php if (!empty($project['image_path'])): ?><img class="preview" src="<?= e(asset($project['image_path'])) ?>" alt="Project cover preview"><?php endif; ?>
+    <?php if (!empty($project['image_path'])): ?>
+        <label>
+            <img class="preview" src="<?= e(asset($project['image_path'])) ?>" alt="<?= e($project['image_alt'] ?? 'Project cover preview') ?>">
+            <span><input type="checkbox" name="remove_image" value="1"> Remove current cover image</span>
+        </label>
+    <?php endif; ?>
     <label>Gallery Screenshots <input type="file" name="gallery[]" accept="image/png,image/jpeg,image/webp,image/gif" multiple></label>
+    <div class="form-grid two">
+        <label>New Gallery Default Alt Text <input name="new_gallery_alt" value="<?= e($project['title'] ?? '') ?>"></label>
+        <label>New Gallery Default Title <input name="new_gallery_title" value="<?= e($project['title'] ?? '') ?>"></label>
+    </div>
 
     <?php if ($gallery): ?>
         <h2>Current Gallery</h2>
-        <div class="gallery-grid">
+        <div class="admin-gallery-list">
             <?php foreach ($gallery as $image): ?>
-                <label>
-                    <img class="preview" src="<?= e(asset($image['image_path'])) ?>" alt="Gallery preview">
-                    <span><input type="checkbox" name="delete_image[<?= e($image['id']) ?>]" value="1"> Remove this image</span>
-                </label>
+                <div class="admin-media-item">
+                    <input type="hidden" name="gallery_id[]" value="<?= e($image['id']) ?>">
+                    <img class="preview" src="<?= e(asset($image['image_path'])) ?>" alt="<?= e($image['alt_text'] ?: 'Gallery preview') ?>">
+                    <div class="form-grid two">
+                        <label>Caption <input name="gallery_caption[]" value="<?= e($image['caption'] ?? '') ?>"></label>
+                        <label>Position <input type="number" name="gallery_position[]" value="<?= e($image['position'] ?? 0) ?>"></label>
+                        <label>Alt Text <input name="gallery_alt[]" value="<?= e($image['alt_text'] ?? '') ?>"></label>
+                        <label>Image Title <input name="gallery_title[]" value="<?= e($image['title_text'] ?? '') ?>"></label>
+                    </div>
+                    <label><span><input type="checkbox" name="delete_image[<?= e($image['id']) ?>]" value="1"> Remove this image</span></label>
+                </div>
             <?php endforeach; ?>
         </div>
     <?php endif; ?>
@@ -44,4 +62,3 @@
         <a class="btn btn-ghost" href="<?= url('/admin/projects') ?>">Cancel</a>
     </div>
 </form>
-

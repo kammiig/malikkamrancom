@@ -66,10 +66,20 @@ final class AdminController
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             Csrf::verify();
+            $currentSettings = $this->settingsArray();
+
+            $logoPath = isset($_POST['remove_logo'])
+                ? ''
+                : (Upload::image('logo_path', 'logo') ?: ($currentSettings['logo_path'] ?? ''));
+            $faviconPath = isset($_POST['remove_favicon'])
+                ? ''
+                : (Upload::image('favicon_path', 'favicon') ?: ($currentSettings['favicon_path'] ?? ''));
 
             $fields = [
                 'site_name',
                 'logo_text',
+                'logo_alt',
+                'logo_title',
                 'header_cta_text',
                 'header_cta_link',
                 'contact_email',
@@ -77,11 +87,15 @@ final class AdminController
                 'contact_location',
                 'footer_about',
                 'copyright_text',
+                'privacy_link',
+                'terms_link',
             ];
 
             foreach ($fields as $field) {
                 $this->saveSetting($field, trim((string) ($_POST[$field] ?? '')));
             }
+            $this->saveSetting('logo_path', $logoPath);
+            $this->saveSetting('favicon_path', $faviconPath);
 
             foreach ($_POST['nav_id'] ?? [] as $index => $id) {
                 $this->execute(
@@ -142,11 +156,17 @@ final class AdminController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             Csrf::verify();
             $image = Upload::image('image', 'hero') ?: ($section['image_path'] ?? '');
+            if (isset($_POST['remove_image'])) {
+                $image = '';
+            }
             $extra = [
                 'primary_button_text' => trim((string) ($_POST['primary_button_text'] ?? '')),
                 'primary_button_link' => trim((string) ($_POST['primary_button_link'] ?? '')),
                 'secondary_button_text' => trim((string) ($_POST['secondary_button_text'] ?? '')),
                 'secondary_button_link' => trim((string) ($_POST['secondary_button_link'] ?? '')),
+                'enable_image' => isset($_POST['enable_image']),
+                'image_alt' => trim((string) ($_POST['image_alt'] ?? '')),
+                'image_title' => trim((string) ($_POST['image_title'] ?? '')),
                 'stats' => $this->parseStats((string) ($_POST['stats'] ?? '')),
             ];
 
@@ -173,9 +193,17 @@ final class AdminController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             Csrf::verify();
             $image = Upload::image('image', 'about') ?: ($section['image_path'] ?? '');
+            if (isset($_POST['remove_image'])) {
+                $image = '';
+            }
             $resume = Upload::document('resume', 'resume') ?: ($section['file_path'] ?? '');
             $extra = [
                 'experience_details' => $this->parseLines((string) ($_POST['experience_details'] ?? '')),
+                'image_style' => in_array($_POST['image_style'] ?? 'black-white', ['normal', 'black-white', 'dark-overlay'], true)
+                    ? (string) $_POST['image_style']
+                    : 'black-white',
+                'image_alt' => trim((string) ($_POST['image_alt'] ?? '')),
+                'image_title' => trim((string) ($_POST['image_title'] ?? '')),
             ];
 
             $this->saveSection('about', [
@@ -424,9 +452,12 @@ final class AdminController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             Csrf::verify();
             $image = Upload::image('og_image', 'seo') ?: ($item['og_image'] ?? '');
+            if (isset($_POST['remove_og_image'])) {
+                $image = '';
+            }
 
             $this->execute(
-                'UPDATE seo_settings SET meta_title = ?, meta_description = ?, meta_keywords = ?, og_title = ?, og_description = ?, og_image = ?, canonical_url = ?, updated_at = NOW() WHERE id = ?',
+                'UPDATE seo_settings SET meta_title = ?, meta_description = ?, meta_keywords = ?, og_title = ?, og_description = ?, og_image = ?, og_image_alt = ?, og_image_title = ?, canonical_url = ?, updated_at = NOW() WHERE id = ?',
                 [
                     trim((string) ($_POST['meta_title'] ?? '')),
                     trim((string) ($_POST['meta_description'] ?? '')),
@@ -434,6 +465,8 @@ final class AdminController
                     trim((string) ($_POST['og_title'] ?? '')),
                     trim((string) ($_POST['og_description'] ?? '')),
                     $image,
+                    trim((string) ($_POST['og_image_alt'] ?? '')),
+                    trim((string) ($_POST['og_image_title'] ?? '')),
                     trim((string) ($_POST['canonical_url'] ?? '')),
                     $id,
                 ]
@@ -479,6 +512,55 @@ final class AdminController
 
     public function media(): void
     {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            Csrf::verify();
+            $action = (string) ($_POST['action'] ?? '');
+            $id = (int) ($_POST['id'] ?? 0);
+            $file = $this->row('SELECT * FROM uploaded_files WHERE id = ? LIMIT 1', [$id]);
+
+            if (!$file) {
+                flash('error', 'Media file not found.');
+                redirect('/admin/media');
+            }
+
+            if ($action === 'update') {
+                $this->execute(
+                    'UPDATE uploaded_files SET alt_text = ?, title_text = ? WHERE id = ?',
+                    [trim((string) ($_POST['alt_text'] ?? '')), trim((string) ($_POST['title_text'] ?? '')), $id]
+                );
+                flash('success', 'Media metadata updated.');
+            }
+
+            if ($action === 'replace') {
+                $replacement = Upload::imageDetails('replacement', 'media-replacement');
+                if ($replacement !== null) {
+                    $this->deletePublicFile((string) $file['path']);
+                    $this->execute(
+                        'UPDATE uploaded_files SET original_name = ?, path = ?, mime_type = ?, file_size = ?, alt_text = ?, title_text = ? WHERE id = ?',
+                        [
+                            $replacement['original_name'],
+                            $replacement['path'],
+                            $replacement['mime_type'],
+                            $replacement['file_size'],
+                            trim((string) ($_POST['alt_text'] ?? $file['alt_text'] ?? '')),
+                            trim((string) ($_POST['title_text'] ?? $file['title_text'] ?? '')),
+                            $id,
+                        ]
+                    );
+                    $this->execute('DELETE FROM uploaded_files WHERE path = ? AND id != ?', [$replacement['path'], $id]);
+                    flash('success', 'Media file replaced.');
+                }
+            }
+
+            if ($action === 'delete') {
+                $this->deletePublicFile((string) $file['path']);
+                $this->execute('DELETE FROM uploaded_files WHERE id = ?', [$id]);
+                flash('success', 'Media file deleted from the media library.');
+            }
+
+            redirect('/admin/media');
+        }
+
         $files = $this->rows('SELECT * FROM uploaded_files ORDER BY created_at DESC');
         $this->render('admin/media', compact('files'), 'Media Library');
     }
@@ -522,6 +604,9 @@ final class AdminController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             Csrf::verify();
             $image = Upload::image('icon_path', 'service') ?: ($service['icon_path'] ?? '');
+            if (isset($_POST['remove_icon'])) {
+                $image = '';
+            }
             $slug = $this->uniqueSlug('services', trim((string) ($_POST['slug'] ?? '')), trim((string) ($_POST['title'] ?? '')), $id);
             $params = [
                 trim((string) ($_POST['title'] ?? '')),
@@ -529,19 +614,21 @@ final class AdminController
                 trim((string) ($_POST['description'] ?? '')),
                 $image,
                 trim((string) ($_POST['icon_label'] ?? '')),
+                trim((string) ($_POST['icon_alt'] ?? '')),
+                trim((string) ($_POST['icon_title'] ?? '')),
                 (int) ($_POST['position'] ?? 0),
                 isset($_POST['is_active']) ? 1 : 0,
             ];
 
             if ($id) {
                 $this->execute(
-                    'UPDATE services SET title = ?, slug = ?, description = ?, icon_path = ?, icon_label = ?, position = ?, is_active = ?, updated_at = NOW() WHERE id = ?',
+                    'UPDATE services SET title = ?, slug = ?, description = ?, icon_path = ?, icon_label = ?, icon_alt = ?, icon_title = ?, position = ?, is_active = ?, updated_at = NOW() WHERE id = ?',
                     [...$params, $id]
                 );
                 flash('success', 'Service updated.');
             } else {
                 $this->execute(
-                    'INSERT INTO services (title, slug, description, icon_path, icon_label, position, is_active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())',
+                    'INSERT INTO services (title, slug, description, icon_path, icon_label, icon_alt, icon_title, position, is_active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())',
                     $params
                 );
                 flash('success', 'Service created.');
@@ -564,6 +651,9 @@ final class AdminController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             Csrf::verify();
             $image = Upload::image('image_path', 'project') ?: ($project['image_path'] ?? '');
+            if (isset($_POST['remove_image'])) {
+                $image = '';
+            }
             $slug = $this->uniqueSlug('projects', trim((string) ($_POST['slug'] ?? '')), trim((string) ($_POST['title'] ?? '')), $id);
             $params = [
                 trim((string) ($_POST['title'] ?? '')),
@@ -577,6 +667,8 @@ final class AdminController
                 trim((string) ($_POST['results'] ?? '')),
                 trim((string) ($_POST['tech_stack'] ?? '')),
                 $image,
+                trim((string) ($_POST['image_alt'] ?? '')),
+                trim((string) ($_POST['image_title'] ?? '')),
                 trim((string) ($_POST['live_url'] ?? '')),
                 trim((string) ($_POST['seo_title'] ?? '')),
                 trim((string) ($_POST['seo_description'] ?? '')),
@@ -587,14 +679,14 @@ final class AdminController
 
             if ($id) {
                 $this->execute(
-                    'UPDATE projects SET title = ?, slug = ?, category = ?, short_description = ?, overview = ?, client_problem = ?, solution = ?, key_features = ?, results = ?, tech_stack = ?, image_path = ?, live_url = ?, seo_title = ?, seo_description = ?, position = ?, is_featured = ?, is_active = ?, updated_at = NOW() WHERE id = ?',
+                    'UPDATE projects SET title = ?, slug = ?, category = ?, short_description = ?, overview = ?, client_problem = ?, solution = ?, key_features = ?, results = ?, tech_stack = ?, image_path = ?, image_alt = ?, image_title = ?, live_url = ?, seo_title = ?, seo_description = ?, position = ?, is_featured = ?, is_active = ?, updated_at = NOW() WHERE id = ?',
                     [...$params, $id]
                 );
                 $projectId = $id;
                 flash('success', 'Project updated.');
             } else {
                 $this->execute(
-                    'INSERT INTO projects (title, slug, category, short_description, overview, client_problem, solution, key_features, results, tech_stack, image_path, live_url, seo_title, seo_description, position, is_featured, is_active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())',
+                    'INSERT INTO projects (title, slug, category, short_description, overview, client_problem, solution, key_features, results, tech_stack, image_path, image_alt, image_title, live_url, seo_title, seo_description, position, is_featured, is_active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())',
                     $params
                 );
                 $projectId = (int) $this->db->lastInsertId();
@@ -605,12 +697,26 @@ final class AdminController
                 $this->execute('DELETE FROM project_images WHERE id = ? AND project_id = ?', [(int) $imageId, $projectId]);
             }
 
+            foreach ($_POST['gallery_id'] ?? [] as $index => $imageId) {
+                $this->execute(
+                    'UPDATE project_images SET caption = ?, alt_text = ?, title_text = ?, position = ?, updated_at = NOW() WHERE id = ? AND project_id = ?',
+                    [
+                        trim((string) ($_POST['gallery_caption'][$index] ?? '')),
+                        trim((string) ($_POST['gallery_alt'][$index] ?? '')),
+                        trim((string) ($_POST['gallery_title'][$index] ?? '')),
+                        (int) ($_POST['gallery_position'][$index] ?? 0),
+                        (int) $imageId,
+                        $projectId,
+                    ]
+                );
+            }
+
             $nextPosition = (int) $this->row('SELECT COALESCE(MAX(position), 0) AS max_position FROM project_images WHERE project_id = ?', [$projectId])['max_position'];
             foreach (Upload::images('gallery', 'project-gallery') as $path) {
                 $nextPosition++;
                 $this->execute(
-                    'INSERT INTO project_images (project_id, image_path, caption, position, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())',
-                    [$projectId, $path, '', $nextPosition]
+                    'INSERT INTO project_images (project_id, image_path, caption, alt_text, title_text, position, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())',
+                    [$projectId, $path, '', trim((string) ($_POST['new_gallery_alt'] ?? $project['title'] ?? 'Project screenshot')), trim((string) ($_POST['new_gallery_title'] ?? $project['title'] ?? 'Project screenshot')), $nextPosition]
                 );
             }
 
@@ -630,6 +736,9 @@ final class AdminController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             Csrf::verify();
             $image = Upload::image('image_path', 'testimonial') ?: ($testimonial['image_path'] ?? '');
+            if (isset($_POST['remove_image'])) {
+                $image = '';
+            }
             $params = [
                 trim((string) ($_POST['quote'] ?? '')),
                 trim((string) ($_POST['client_name'] ?? '')),
@@ -637,19 +746,21 @@ final class AdminController
                 trim((string) ($_POST['company'] ?? '')),
                 (int) ($_POST['rating'] ?? 5),
                 $image,
+                trim((string) ($_POST['image_alt'] ?? '')),
+                trim((string) ($_POST['image_title'] ?? '')),
                 (int) ($_POST['position'] ?? 0),
                 isset($_POST['is_active']) ? 1 : 0,
             ];
 
             if ($id) {
                 $this->execute(
-                    'UPDATE testimonials SET quote = ?, client_name = ?, client_role = ?, company = ?, rating = ?, image_path = ?, position = ?, is_active = ?, updated_at = NOW() WHERE id = ?',
+                    'UPDATE testimonials SET quote = ?, client_name = ?, client_role = ?, company = ?, rating = ?, image_path = ?, image_alt = ?, image_title = ?, position = ?, is_active = ?, updated_at = NOW() WHERE id = ?',
                     [...$params, $id]
                 );
                 flash('success', 'Testimonial updated.');
             } else {
                 $this->execute(
-                    'INSERT INTO testimonials (quote, client_name, client_role, company, rating, image_path, position, is_active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())',
+                    'INSERT INTO testimonials (quote, client_name, client_role, company, rating, image_path, image_alt, image_title, position, is_active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())',
                     $params
                 );
                 flash('success', 'Testimonial created.');
@@ -748,6 +859,18 @@ final class AdminController
         );
     }
 
+    private function deletePublicFile(string $path): void
+    {
+        if ($path === '' || str_contains($path, '..') || str_starts_with($path, 'http')) {
+            return;
+        }
+
+        $absolute = APP_ROOT . '/public/' . ltrim($path, '/');
+        if (is_file($absolute)) {
+            @unlink($absolute);
+        }
+    }
+
     private function parseLines(string $value): array
     {
         return array_values(array_filter(array_map('trim', preg_split("/\R/", $value) ?: [])));
@@ -790,4 +913,3 @@ final class AdminController
         }
     }
 }
-

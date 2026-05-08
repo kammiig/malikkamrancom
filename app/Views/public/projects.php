@@ -14,7 +14,7 @@
                 <article class="project-card">
                     <a class="project-media" href="<?= e(url('/projects/' . $project['slug'])) ?>">
                         <?php if (!empty($project['image_path'])): ?>
-                            <img src="<?= e(asset($project['image_path'])) ?>" alt="<?= e($project['title']) ?>" loading="lazy">
+                            <img src="<?= e(asset($project['image_path'])) ?>" alt="<?= e($project['image_alt'] ?: $project['title']) ?>" title="<?= e($project['image_title'] ?: $project['title']) ?>" width="640" height="400" loading="lazy">
                         <?php else: ?>
                             <span><?= e($project['category']) ?></span>
                         <?php endif; ?>
@@ -38,4 +38,3 @@
         </div>
     </div>
 </section>
-

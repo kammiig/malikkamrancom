@@ -23,7 +23,7 @@
         </aside>
         <div class="case-content">
             <?php if (!empty($project['image_path'])): ?>
-                <img class="case-cover" src="<?= e(asset($project['image_path'])) ?>" alt="<?= e($project['title']) ?>" loading="lazy">
+                <img class="case-cover" src="<?= e(asset($project['image_path'])) ?>" alt="<?= e($project['image_alt'] ?: $project['title']) ?>" title="<?= e($project['image_title'] ?: $project['title']) ?>" width="920" height="575" loading="lazy">
             <?php endif; ?>
             <article>
                 <h2>Overview</h2>
@@ -59,7 +59,7 @@
             <div class="gallery-grid">
                 <?php foreach ($gallery as $image): ?>
                     <figure>
-                        <img src="<?= e(asset($image['image_path'])) ?>" alt="<?= e($image['caption'] ?: $project['title']) ?>" loading="lazy">
+                        <img src="<?= e(asset($image['image_path'])) ?>" alt="<?= e($image['alt_text'] ?: ($image['caption'] ?: $project['title'])) ?>" title="<?= e($image['title_text'] ?: ($image['caption'] ?: $project['title'])) ?>" width="640" height="400" loading="lazy">
                         <?php if (!empty($image['caption'])): ?><figcaption><?= e($image['caption']) ?></figcaption><?php endif; ?>
                     </figure>
                 <?php endforeach; ?>
@@ -67,4 +67,3 @@
         </div>
     </section>
 <?php endif; ?>
-

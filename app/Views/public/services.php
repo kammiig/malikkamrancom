@@ -13,9 +13,9 @@
                 <article class="service-card">
                     <div class="service-icon">
                         <?php if (!empty($service['icon_path'])): ?>
-                            <img src="<?= e(asset($service['icon_path'])) ?>" alt="" loading="lazy">
+                            <img src="<?= e(asset($service['icon_path'])) ?>" alt="<?= e($service['icon_alt'] ?? $service['title']) ?>" title="<?= e($service['icon_title'] ?? $service['title']) ?>" width="32" height="32" loading="lazy">
                         <?php else: ?>
-                            <?= e($service['icon_label'] ?: substr($service['title'], 0, 2)) ?>
+                            <?= icon_svg($service['icon_label'] ?: 'monitor', 'service-svg') ?>
                         <?php endif; ?>
                     </div>
                     <h2><?= e($service['title']) ?></h2>
@@ -44,4 +44,3 @@
         </div>
     </div>
 </section>
-

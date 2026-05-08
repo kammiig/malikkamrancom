@@ -5,6 +5,8 @@ $metaTitle = $seo['meta_title'] ?: $siteName;
 $metaDescription = $seo['meta_description'] ?? '';
 $ogImage = $seo['og_image'] ?? '';
 $ogImageUrl = $ogImage ? (str_starts_with($ogImage, 'http') ? $ogImage : url($ogImage)) : '';
+$logoPath = $settings['logo_path'] ?? '';
+$faviconPath = $settings['favicon_path'] ?? '';
 ?>
 <!doctype html>
 <html lang="en">
@@ -24,6 +26,9 @@ $ogImageUrl = $ogImage ? (str_starts_with($ogImage, 'http') ? $ogImage : url($og
         <meta property="og:image" content="<?= e($ogImageUrl) ?>">
     <?php endif; ?>
     <meta name="theme-color" content="#06111f">
+    <?php if ($faviconPath): ?>
+        <link rel="icon" href="<?= e(asset($faviconPath)) ?>">
+    <?php endif; ?>
     <link rel="stylesheet" href="<?= asset('/assets/css/app.css') ?>">
 </head>
 <body>
@@ -32,8 +37,12 @@ $ogImageUrl = $ogImage ? (str_starts_with($ogImage, 'http') ? $ogImage : url($og
     <header class="site-header" data-header>
         <div class="container header-inner">
             <a class="brand" href="<?= url('/') ?>" aria-label="<?= e($siteName) ?>">
-                <span class="brand-mark">KM</span>
-                <span><?= e($logoText) ?></span>
+                <?php if ($logoPath): ?>
+                    <img class="brand-logo" src="<?= e(asset($logoPath)) ?>" alt="<?= e($settings['logo_alt'] ?? $siteName) ?>" title="<?= e($settings['logo_title'] ?? $siteName) ?>" width="180" height="44">
+                <?php else: ?>
+                    <span class="brand-mark">KM</span>
+                    <span><?= e($logoText) ?></span>
+                <?php endif; ?>
             </a>
 
             <button class="nav-toggle" type="button" aria-label="Open navigation" data-nav-toggle>
@@ -59,16 +68,27 @@ $ogImageUrl = $ogImage ? (str_starts_with($ogImage, 'http') ? $ogImage : url($og
         <div class="container footer-grid">
             <div>
                 <a class="brand footer-brand" href="<?= url('/') ?>">
-                    <span class="brand-mark">KM</span>
-                    <span><?= e($logoText) ?></span>
+                    <?php if ($logoPath): ?>
+                        <img class="brand-logo" src="<?= e(asset($logoPath)) ?>" alt="<?= e($settings['logo_alt'] ?? $siteName) ?>" title="<?= e($settings['logo_title'] ?? $siteName) ?>" width="180" height="44" loading="lazy">
+                    <?php else: ?>
+                        <span class="brand-mark">KM</span>
+                        <span><?= e($logoText) ?></span>
+                    <?php endif; ?>
                 </a>
                 <p><?= e($settings['footer_about'] ?? '') ?></p>
                 <div class="social-row">
                     <?php foreach ($socialLinks as $social): ?>
-                        <a href="<?= e($social['url']) ?>" target="_blank" rel="noopener">
-                            <?= e($social['icon'] ?: $social['label']) ?>
+                        <a class="social-link" href="<?= e($social['url']) ?>" target="_blank" rel="noopener" aria-label="<?= e($social['label']) ?>">
+                            <?= icon_svg($social['icon'] ?: $social['label'], 'social-icon') ?>
+                            <span><?= e($social['label']) ?></span>
                         </a>
                     <?php endforeach; ?>
+                    <?php if (!empty($settings['contact_email'])): ?>
+                        <a class="social-link" href="mailto:<?= e($settings['contact_email']) ?>" aria-label="Email">
+                            <?= icon_svg('email', 'social-icon') ?>
+                            <span>Email</span>
+                        </a>
+                    <?php endif; ?>
                 </div>
             </div>
             <div>
@@ -88,12 +108,15 @@ $ogImageUrl = $ogImage ? (str_starts_with($ogImage, 'http') ? $ogImage : url($og
                 <a href="mailto:<?= e($settings['contact_email'] ?? '') ?>"><?= e($settings['contact_email'] ?? '') ?></a>
                 <span><?= e($settings['contact_phone'] ?? '') ?></span>
                 <span><?= e($settings['contact_location'] ?? '') ?></span>
-                <a href="<?= url('/privacy-policy') ?>">Privacy Policy</a>
-                <a href="<?= url('/terms-conditions') ?>">Terms & Conditions</a>
             </div>
         </div>
         <div class="container footer-bottom">
             <span><?= e($settings['copyright_text'] ?? '© 2026 Muhammad Kamran Malik. All Rights Reserved.') ?></span>
+            <nav class="footer-legal" aria-label="Legal links">
+                <a href="<?= e(url($settings['privacy_link'] ?? '/privacy-policy')) ?>">Privacy Policy</a>
+                <span aria-hidden="true">|</span>
+                <a href="<?= e(url($settings['terms_link'] ?? '/terms-conditions')) ?>">Terms & Conditions</a>
+            </nav>
         </div>
     </footer>
 

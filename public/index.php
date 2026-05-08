@@ -112,7 +112,7 @@ if (str_starts_with($path, '/admin')) {
         ['GET|POST', '#^/admin/seo/(\d+)/edit$#', 'seoEdit'],
         ['GET', '#^/admin/pages$#', 'pages'],
         ['GET|POST', '#^/admin/pages/(\d+)/edit$#', 'pageEdit'],
-        ['GET', '#^/admin/media$#', 'media'],
+        ['GET|POST', '#^/admin/media$#', 'media'],
         ['GET|POST', '#^/admin/password$#', 'password'],
     ];
 
@@ -130,4 +130,3 @@ if (str_starts_with($path, '/admin')) {
 }
 
 $public->notFound();
-

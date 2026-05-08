@@ -2,6 +2,8 @@
 $heroExtra = $hero['extra'] ?? [];
 $stats = $heroExtra['stats'] ?? [];
 $aboutExtra = $about['extra'] ?? [];
+$heroImageEnabled = !empty($heroExtra['enable_image']) && !empty($hero['image_path']);
+$aboutImageStyle = $aboutExtra['image_style'] ?? 'black-white';
 ?>
 <section class="hero section-pad">
     <div class="container hero-grid">
@@ -23,8 +25,8 @@ $aboutExtra = $about['extra'] ?? [];
             </div>
         </div>
         <div class="hero-visual reveal">
-            <?php if (!empty($hero['image_path'])): ?>
-                <img src="<?= e(asset($hero['image_path'])) ?>" alt="Muhammad Kamran Malik" loading="eager">
+            <?php if ($heroImageEnabled): ?>
+                <img src="<?= e(asset($hero['image_path'])) ?>" alt="<?= e($heroExtra['image_alt'] ?? 'Muhammad Kamran Malik web developer') ?>" title="<?= e($heroExtra['image_title'] ?? 'Muhammad Kamran Malik') ?>" width="520" height="650" loading="eager" fetchpriority="high">
             <?php else: ?>
                 <div class="code-card">
                     <div class="code-dots"><span></span><span></span><span></span></div>
@@ -41,9 +43,9 @@ $aboutExtra = $about['extra'] ?? [];
 
 <section class="section-pad" id="about">
     <div class="container split">
-        <div class="portrait reveal">
+        <div class="portrait image-style-<?= e($aboutImageStyle) ?> reveal">
             <?php if (!empty($about['image_path'])): ?>
-                <img src="<?= e(asset($about['image_path'])) ?>" alt="Muhammad Kamran Malik profile image" loading="lazy">
+                <img src="<?= e(asset($about['image_path'])) ?>" alt="<?= e($aboutExtra['image_alt'] ?? 'Muhammad Kamran Malik profile image') ?>" title="<?= e($aboutExtra['image_title'] ?? 'Muhammad Kamran Malik') ?>" width="560" height="700" loading="lazy">
             <?php else: ?>
                 <div class="avatar-placeholder">MKM</div>
             <?php endif; ?>
@@ -75,9 +77,9 @@ $aboutExtra = $about['extra'] ?? [];
                 <article class="service-card reveal">
                     <div class="service-icon">
                         <?php if (!empty($service['icon_path'])): ?>
-                            <img src="<?= e(asset($service['icon_path'])) ?>" alt="" loading="lazy">
+                            <img src="<?= e(asset($service['icon_path'])) ?>" alt="<?= e($service['icon_alt'] ?? $service['title']) ?>" title="<?= e($service['icon_title'] ?? $service['title']) ?>" width="32" height="32" loading="lazy">
                         <?php else: ?>
-                            <?= e($service['icon_label'] ?: substr($service['title'], 0, 2)) ?>
+                            <?= icon_svg($service['icon_label'] ?: 'monitor', 'service-svg') ?>
                         <?php endif; ?>
                     </div>
                     <h3><?= e($service['title']) ?></h3>
@@ -103,7 +105,7 @@ $aboutExtra = $about['extra'] ?? [];
                 <article class="project-card reveal">
                     <a class="project-media" href="<?= e(url('/projects/' . $project['slug'])) ?>">
                         <?php if (!empty($project['image_path'])): ?>
-                            <img src="<?= e(asset($project['image_path'])) ?>" alt="<?= e($project['title']) ?>" loading="lazy">
+                            <img src="<?= e(asset($project['image_path'])) ?>" alt="<?= e($project['image_alt'] ?: $project['title']) ?>" title="<?= e($project['image_title'] ?: $project['title']) ?>" width="640" height="400" loading="lazy">
                         <?php else: ?>
                             <span><?= e($project['category']) ?></span>
                         <?php endif; ?>
@@ -180,7 +182,7 @@ $aboutExtra = $about['extra'] ?? [];
                     <blockquote>“<?= e($testimonial['quote']) ?>”</blockquote>
                     <div class="client-row">
                         <?php if (!empty($testimonial['image_path'])): ?>
-                            <img src="<?= e(asset($testimonial['image_path'])) ?>" alt="<?= e($testimonial['client_name']) ?>" loading="lazy">
+                            <img src="<?= e(asset($testimonial['image_path'])) ?>" alt="<?= e($testimonial['image_alt'] ?: $testimonial['client_name']) ?>" title="<?= e($testimonial['image_title'] ?: $testimonial['client_name']) ?>" width="46" height="46" loading="lazy">
                         <?php endif; ?>
                         <div>
                             <strong><?= e($testimonial['client_name']) ?></strong>
@@ -203,4 +205,3 @@ $aboutExtra = $about['extra'] ?? [];
         <?php require APP_ROOT . '/app/Views/partials/contact-form.php'; ?>
     </div>
 </section>
-

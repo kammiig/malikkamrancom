@@ -38,6 +38,12 @@ cp .env.example .env
 mysql -u your_database_user -p your_database_name < database/schema.sql
 ```
 
+For an existing installation created before the logo/hero/media improvements, run the update SQL once:
+
+```bash
+mysql -u your_database_user -p your_database_name < database/updates/2026_05_portfolio_improvements.sql
+```
+
 4. Create the admin user:
 
 ```bash
@@ -62,10 +68,10 @@ Admin URL:
 
 The dashboard lets you manage:
 
-- Header logo, navigation labels, CTA, footer, social links, and contact details
-- Hero text, buttons, stats, and image
-- About text, profile image, experience details, and resume file
-- Services
+- Header logo image, favicon, logo alt/title text, navigation labels, CTA, footer, social links, and contact details
+- Hero text, buttons, stats, image upload, image remove, image enable/disable, and image alt/title text
+- About text, profile image, image style, image alt/title text, experience details, and resume file
+- Services, predefined service icons, optional custom icon images, icon alt/title text, and ordering
 - Projects, case studies, screenshots, live links, featured status, and ordering
 - Skills and skill categories
 - Process steps
@@ -73,7 +79,7 @@ The dashboard lets you manage:
 - Contact enquiries, read/unread status, and deletion
 - SEO meta titles, descriptions, keywords, Open Graph data, canonical URLs, and OG images
 - Privacy Policy and Terms & Conditions pages
-- Uploaded media
+- Uploaded media metadata, replacement, and deletion
 - Admin password
 
 ## Contact Form
@@ -120,6 +126,7 @@ Recommended deployment:
 3. Copy `.env.example` to `.env` and update database credentials.
 4. Create a MySQL database and user in cPanel.
 5. Import `database/schema.sql` through phpMyAdmin.
+   Existing installations should also import `database/updates/2026_05_portfolio_improvements.sql` once.
 6. Create the admin user from cPanel Terminal:
 
 ```bash
@@ -139,7 +146,7 @@ After pushing the project to GitHub, a typical update flow on cPanel Terminal is
 git pull origin main
 ```
 
-Then import any new SQL changes manually if the database schema changes in the future. Do not commit `.env` or uploaded private files.
+Then import any new SQL changes manually if the database schema changes in the future. For this update, existing sites should run `database/updates/2026_05_portfolio_improvements.sql` once. Do not commit `.env` or uploaded private files.
 
 ## Security Notes
 
@@ -149,4 +156,3 @@ Then import any new SQL changes manually if the database schema changes in the f
 - Uploaded files are MIME-checked and size-limited.
 - Main content is escaped before output.
 - Admin credentials are not included in the source code or SQL seed.
-

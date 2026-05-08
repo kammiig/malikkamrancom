@@ -13,10 +13,18 @@
     </div>
     <label>Open Graph Description <textarea name="og_description" rows="4"><?= e($item['og_description']) ?></textarea></label>
     <label>Open Graph Image <input type="file" name="og_image" accept="image/png,image/jpeg,image/webp,image/gif"></label>
-    <?php if (!empty($item['og_image'])): ?><img class="preview" src="<?= e(asset($item['og_image'])) ?>" alt="OG preview"><?php endif; ?>
+    <div class="form-grid two">
+        <label>OG Image Alt Text <input name="og_image_alt" value="<?= e($item['og_image_alt'] ?? '') ?>"></label>
+        <label>OG Image Title <input name="og_image_title" value="<?= e($item['og_image_title'] ?? '') ?>"></label>
+    </div>
+    <?php if (!empty($item['og_image'])): ?>
+        <label>
+            <img class="preview" src="<?= e(asset($item['og_image'])) ?>" alt="<?= e($item['og_image_alt'] ?? 'OG preview') ?>">
+            <span><input type="checkbox" name="remove_og_image" value="1"> Remove current OG image</span>
+        </label>
+    <?php endif; ?>
     <div class="admin-actions">
         <button class="btn" type="submit">Save SEO</button>
         <a class="btn btn-ghost" href="<?= url('/admin/seo') ?>">Cancel</a>
     </div>
 </form>
-

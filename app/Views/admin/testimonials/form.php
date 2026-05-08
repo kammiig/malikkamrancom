@@ -9,12 +9,18 @@
         <label>Rating <input type="number" min="1" max="5" name="rating" value="<?= e($testimonial['rating'] ?? 5) ?>"></label>
         <label>Position <input type="number" name="position" value="<?= e($testimonial['position'] ?? 0) ?>"></label>
         <label>Client Image / Logo <input type="file" name="image_path" accept="image/png,image/jpeg,image/webp,image/gif"></label>
+        <label>Image Alt Text <input name="image_alt" value="<?= e($testimonial['image_alt'] ?? '') ?>"></label>
+        <label>Image Title <input name="image_title" value="<?= e($testimonial['image_title'] ?? '') ?>"></label>
     </div>
-    <?php if (!empty($testimonial['image_path'])): ?><img class="preview" src="<?= e(asset($testimonial['image_path'])) ?>" alt="Client preview"><?php endif; ?>
+    <?php if (!empty($testimonial['image_path'])): ?>
+        <label>
+            <img class="preview" src="<?= e(asset($testimonial['image_path'])) ?>" alt="<?= e($testimonial['image_alt'] ?? 'Client preview') ?>">
+            <span><input type="checkbox" name="remove_image" value="1"> Remove current image</span>
+        </label>
+    <?php endif; ?>
     <label><span><input type="checkbox" name="is_active" value="1" <?= checked($testimonial['is_active'] ?? 1) ?>> Active</span></label>
     <div class="admin-actions">
         <button class="btn" type="submit"><?= $isEdit ? 'Save Testimonial' : 'Create Testimonial' ?></button>
         <a class="btn btn-ghost" href="<?= url('/admin/testimonials') ?>">Cancel</a>
     </div>
 </form>
-
