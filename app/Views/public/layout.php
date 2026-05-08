@@ -29,7 +29,7 @@ $faviconPath = $settings['favicon_path'] ?? '';
     <?php if ($faviconPath): ?>
         <link rel="icon" href="<?= e(asset($faviconPath)) ?>">
     <?php endif; ?>
-    <link rel="stylesheet" href="<?= asset('/assets/css/app.css') ?>">
+    <link rel="stylesheet" href="<?= versioned_asset('/assets/css/app.css') ?>">
 </head>
 <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -120,6 +120,6 @@ $faviconPath = $settings['favicon_path'] ?? '';
         </div>
     </footer>
 
-    <script src="<?= asset('/assets/js/app.js') ?>" defer></script>
+    <script src="<?= versioned_asset('/assets/js/app.js') ?>" defer></script>
 </body>
 </html>
