@@ -217,7 +217,7 @@ h3 {
 h1 {
     max-width: 900px;
     margin-bottom: 22px;
-    font-size: clamp(38px, 5vw, 64px);
+    font-size: clamp(34px, 4vw, 52px);
 }
 
 h2 {
@@ -236,8 +236,9 @@ h3 {
 }
 
 .hero h1 {
-    max-width: 760px;
-    font-size: clamp(42px, 5vw, 64px);
+    max-width: 720px;
+    font-size: clamp(36px, 3.35vw, 52px) !important;
+    line-height: 1.04;
     letter-spacing: 0;
 }
 
@@ -617,13 +618,85 @@ pre {
     font-size: 19px;
 }
 
-.testimonial-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
 .rating {
     color: var(--warning);
     margin-bottom: 18px;
+}
+
+.testimonial-carousel {
+    overflow: hidden;
+}
+
+.testimonial-track {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+}
+
+.testimonial-track::-webkit-scrollbar {
+    display: none;
+}
+
+.testimonial-track .testimonial-card {
+    flex: 0 0 calc(50% - 10px);
+    scroll-snap-align: start;
+}
+
+.review-topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.review-topline .rating {
+    margin-bottom: 0;
+}
+
+.google-review-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 34px;
+    border: 1px solid rgba(255, 255, 255, .1);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .035);
+    color: var(--soft);
+    padding: 7px 10px;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.google-icon {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+}
+
+.carousel-controls {
+    display: inline-flex;
+    gap: 10px;
+}
+
+.carousel-btn {
+    width: 42px;
+    height: 42px;
+    border: 1px solid rgba(41, 211, 255, .35);
+    border-radius: 8px;
+    background: rgba(41, 211, 255, .07);
+    color: var(--cyan);
+    cursor: pointer;
+    font-size: 30px;
+    line-height: 1;
+}
+
+.carousel-btn:hover {
+    background: rgba(41, 211, 255, .14);
 }
 
 blockquote {
@@ -643,6 +716,17 @@ blockquote {
     height: 46px;
     border-radius: 50%;
     object-fit: cover;
+}
+
+.client-avatar {
+    width: 46px;
+    height: 46px;
+    display: inline-grid;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(41, 211, 255, .08);
+    color: var(--cyan);
+    font-weight: 900;
 }
 
 .contact-band {
@@ -772,15 +856,20 @@ textarea:focus {
 }
 
 .social-row {
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 10px;
 }
 
 .social-link {
     display: inline-flex !important;
+    flex-direction: row !important;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     min-height: 38px;
+    width: auto;
     border: 1px solid rgba(41, 211, 255, .18);
     border-radius: 8px;
     background: rgba(41, 211, 255, .06);
@@ -791,11 +880,22 @@ textarea:focus {
     display: inline;
     margin: 0;
     color: inherit;
+    font-size: 14px;
+    line-height: 1;
 }
 
 .social-icon {
-    width: 18px;
-    height: 18px;
+    width: 18px !important;
+    height: 18px !important;
+    flex: 0 0 18px;
+    display: block;
+    stroke-width: 1.8;
+}
+
+.social-icon path,
+.social-icon circle,
+.social-icon rect {
+    vector-effect: non-scaling-stroke;
 }
 
 .footer-grid a:hover {
@@ -1057,7 +1157,12 @@ textarea:focus {
     }
 
     .hero h1 {
-        font-size: clamp(40px, 7vw, 52px);
+        font-size: clamp(34px, 4.6vw, 44px) !important;
+        max-width: 680px;
+    }
+
+    .testimonial-track .testimonial-card {
+        flex-basis: min(82%, 620px);
     }
 
     .case-sidebar {
@@ -1095,7 +1200,7 @@ textarea:focus {
     h1,
     .hero h1,
     .page-hero h1 {
-        font-size: clamp(34px, 9vw, 42px);
+        font-size: clamp(31px, 8vw, 36px) !important;
     }
 
     h2 {
@@ -1145,5 +1250,19 @@ textarea:focus {
     .admin-card,
     .admin-panel {
         padding: 18px;
+    }
+
+    .testimonial-track .testimonial-card {
+        flex-basis: 100%;
+    }
+
+    .review-topline {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .carousel-controls {
+        width: 100%;
+        justify-content: flex-start;
     }
 }

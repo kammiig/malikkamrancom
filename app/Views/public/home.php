@@ -171,26 +171,39 @@ $aboutImageStyle = $aboutExtra['image_style'] ?? 'black-white';
 
 <section class="section-pad alt" id="testimonials">
     <div class="container">
-        <div class="section-head">
-            <span class="eyebrow">Testimonials</span>
-            <h2>Reliable delivery, clean communication, and websites clients can manage.</h2>
+        <div class="section-head with-action">
+            <div>
+                <span class="eyebrow">Testimonials</span>
+                <h2>Reliable delivery, clean communication, and websites clients can manage.</h2>
+            </div>
+            <div class="carousel-controls" aria-label="Testimonial carousel controls">
+                <button type="button" class="carousel-btn" data-carousel-prev aria-label="Previous testimonial">‹</button>
+                <button type="button" class="carousel-btn" data-carousel-next aria-label="Next testimonial">›</button>
+            </div>
         </div>
-        <div class="testimonial-grid">
-            <?php foreach ($testimonials as $testimonial): ?>
-                <article class="testimonial-card reveal">
-                    <div class="rating"><?= str_repeat('★', (int) $testimonial['rating']) ?></div>
-                    <blockquote>“<?= e($testimonial['quote']) ?>”</blockquote>
-                    <div class="client-row">
-                        <?php if (!empty($testimonial['image_path'])): ?>
-                            <img src="<?= e(asset($testimonial['image_path'])) ?>" alt="<?= e($testimonial['image_alt'] ?: $testimonial['client_name']) ?>" title="<?= e($testimonial['image_title'] ?: $testimonial['client_name']) ?>" width="46" height="46" loading="lazy">
-                        <?php endif; ?>
-                        <div>
-                            <strong><?= e($testimonial['client_name']) ?></strong>
-                            <span><?= e(trim($testimonial['client_role'] . ' ' . $testimonial['company'])) ?></span>
+        <div class="testimonial-carousel" data-carousel>
+            <div class="testimonial-track" data-carousel-track>
+                <?php foreach ($testimonials as $testimonial): ?>
+                    <article class="testimonial-card reveal">
+                        <div class="review-topline">
+                            <div class="rating"><?= str_repeat('★', (int) $testimonial['rating']) ?></div>
+                            <span class="google-review-badge"><?= icon_svg('google', 'google-icon') ?><span>Google Review</span></span>
                         </div>
-                    </div>
-                </article>
-            <?php endforeach; ?>
+                        <blockquote>“<?= e($testimonial['quote']) ?>”</blockquote>
+                        <div class="client-row">
+                            <?php if (!empty($testimonial['image_path'])): ?>
+                                <img src="<?= e(asset($testimonial['image_path'])) ?>" alt="<?= e($testimonial['image_alt'] ?: $testimonial['client_name']) ?>" title="<?= e($testimonial['image_title'] ?: $testimonial['client_name']) ?>" width="46" height="46" loading="lazy">
+                            <?php else: ?>
+                                <span class="client-avatar"><?= e(substr($testimonial['client_name'], 0, 1)) ?></span>
+                            <?php endif; ?>
+                            <div>
+                                <strong><?= e($testimonial['client_name']) ?></strong>
+                                <span><?= e(trim($testimonial['client_role'] . ' ' . $testimonial['company'])) ?></span>
+                            </div>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            </div>
         </div>
     </div>
 </section>

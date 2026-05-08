@@ -43,3 +43,22 @@ document.querySelectorAll('[data-confirm]').forEach((element) => {
     });
 });
 
+document.querySelectorAll('[data-carousel]').forEach((carousel) => {
+    const track = carousel.querySelector('[data-carousel-track]');
+    const section = carousel.closest('section');
+    const prev = section?.querySelector('[data-carousel-prev]');
+    const next = section?.querySelector('[data-carousel-next]');
+
+    if (!track || !prev || !next) {
+        return;
+    }
+
+    const scrollBySlide = (direction) => {
+        const slide = track.querySelector('.testimonial-card');
+        const amount = slide ? slide.getBoundingClientRect().width + 20 : track.clientWidth;
+        track.scrollBy({ left: direction * amount, behavior: 'smooth' });
+    };
+
+    prev.addEventListener('click', () => scrollBySlide(-1));
+    next.addEventListener('click', () => scrollBySlide(1));
+});
